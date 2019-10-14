@@ -17,26 +17,26 @@ class RestOperationBuilder {
 }
 
 class QueryParamsBuilder {
-    var queryParamList = mutableListOf<String>()
+    var queryParamList = mutableListOf<Pair<String, String>>()
 
-    operator fun String.unaryPlus() {
+    operator fun Pair<String, String>.unaryPlus() {
         queryParamList.add(this)
     }
 }
 
 class HeadersBuilder {
-    var headers = mutableListOf<String>()
+    var headers = mutableListOf<Pair<String, String>>()
 
-    operator fun String.unaryPlus() {
+    operator fun Pair<String, String>.unaryPlus() {
         headers.add(this)
     }
 
 }
 
 class RequestBuilder {
-    lateinit var body: String
-    var queryParamList = mutableListOf<String>()
-    var headerList = mutableListOf<String>()
+    lateinit var body: Any
+    var queryParamList = mutableListOf<Pair<String, String>>()
+    var headerList = mutableListOf<Pair<String, String>>()
 
     fun queryParams(block: QueryParamsBuilder.() -> Unit) {
         val queryParamsBuilder = QueryParamsBuilder()
@@ -86,15 +86,18 @@ class RestDSL {
 
     companion object {
         @JvmStatic fun main(args: Array<String>) {
+
+            data class Body(val content: String)
+
             get("www.google.com") {
                 request {
                     queryParams {
-                        +"param"
+                        +("param key" to "param value")
                     }
                     headers {
-                        +"header"
+                        +("header key" to "header value")
                     }
-                    body = "model"
+                    body = Body("some object or plain String")
                 }
                 response {
                     type = String::class
